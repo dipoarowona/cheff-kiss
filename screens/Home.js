@@ -1,8 +1,15 @@
 import React from "react";
-import { StyleSheet, Text, View, FlatList } from "react-native";
-
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import { Formik } from "formik";
 import RestaurantCard from "../Components/RestaurantCard";
-
+import { MaterialIcons } from "@expo/vector-icons";
 const Home = ({ navigation }) => {
   const restaurant_data = [
     {
@@ -44,6 +51,50 @@ const Home = ({ navigation }) => {
       <View style={{ width: "90%", alignSelf: "center" }}>
         <Text style={styles.textHeader}>Restaurants</Text>
       </View>
+
+      <Formik
+        initialValues={{ search: "" }}
+        onSubmit={(values, actions) => {
+          console.warn("Seaching for " + values.search);
+          actions.resetForm();
+        }}
+      >
+        {({ handleSubmit, handleChange, values }) => (
+          <View style={styles.form}>
+            <TextInput
+              onSubmitEditing={handleSubmit}
+              style={styles.searchbar}
+              onChangeText={handleChange("search")}
+              placeholder="Search For Restaurant"
+              returnKeyType="done"
+            />
+          </View>
+        )}
+      </Formik>
+
+      <View
+        style={{
+          width: "90%",
+          alignSelf: "center",
+          flexDirection: "row",
+          justifyContent: "space-around",
+          paddingBottom: 20,
+        }}
+      >
+        <TouchableOpacity style={styles.btn}>
+          <MaterialIcons name="restaurant" size={16} color="black" />
+          <Text>All</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btn}>
+          <MaterialIcons name="near-me" size={16} color="black" />
+          <Text>Near Me</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btn}>
+          <MaterialIcons name="fastfood" size={16} color="black" />
+          <Text>Fast Food</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.RestaurantFlatList}>
         <FlatList
           data={restaurant_data}
@@ -65,10 +116,30 @@ const styles = StyleSheet.create({
   },
   RestaurantFlatList: {
     width: "100%",
-    paddingBottom: 100,
+    paddingBottom: 390,
   },
   textHeader: {
     fontSize: 25,
+    paddingVertical: 20,
+  },
+  form: {
+    width: "90%",
+    alignSelf: "center",
+    paddingBottom: 20,
+  },
+  searchbar: {
+    height: 40,
+    padding: 10,
+    borderWidth: 1,
+    width: "100%",
+    borderRadius: 6,
+  },
+  btn: {
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    flexDirection: "row",
   },
 });
 

@@ -6,9 +6,9 @@ const star = (props) => {
   const overall_rating = props.rating;
   return (
     <>
-      {overall_rating > 1 ? (
+      {overall_rating >= 1 ? (
         <Octicons name="star" size={35} color="#C94545" />
-      ) : overall_rating <= 1 && overall_rating > 0 ? (
+      ) : overall_rating < 1 && overall_rating > 0 ? (
         <Octicons name="star" size={35} color="#de9999" />
       ) : (
         <Octicons name="star" size={35} color="#E2E2E2" />

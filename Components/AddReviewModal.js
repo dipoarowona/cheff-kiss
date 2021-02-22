@@ -7,9 +7,11 @@ import {
   Alert,
   Pressable,
   TextInput,
-  Keyboard,
   TouchableWithoutFeedback,
+  keyboard,
+  Keyboard,
 } from "react-native";
+import { Formik } from "formik";
 
 const AddReviewModal = (props) => {
   const modalVisible = props.visible;
@@ -24,43 +26,100 @@ const AddReviewModal = (props) => {
           props.setModalVisible(!modalVisible);
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.headerText}>New Review For {props.name}</Text>
-            <TextInput placeholder="Name" style={styles.input} />
-            <TextInput placeholder="City" style={styles.input} />
-            <TextInput placeholder="Date" style={styles.input} />
-            <TextInput placeholder="Rating" style={styles.input} />
-            <TextInput
-              placeholder="Description"
-              style={[styles.input, { height: 100 }]}
-            />
-            <View
-              style={{
-                flexDirection: "row",
-                width: "80%",
-                justifyContent: "space-around",
-              }}
-            >
-              <Pressable
-                style={[
-                  styles.button,
-                  styles.buttonClose,
-                  { backgroundColor: "red" },
-                ]}
-                onPress={() => props.setModalVisible(!modalVisible)}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.headerText}>New Review For {props.name}</Text>
+              <Formik
+                initialValues={{
+                  user: "",
+                  location: "",
+                  date: "",
+                  rating: "",
+                  review: "",
+                }}
+                onSubmit={({ user, location, date, rating, review }) => {
+                  props.addData({
+                    id: Math.random() * 10000,
+                    user,
+                    location,
+                    date,
+                    rating: parseFloat(rating),
+                    review,
+                  });
+                  props.setModalVisible(!modalVisible);
+                }}
               >
-                <Text style={styles.textStyle}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => props.setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Submit</Text>
-              </Pressable>
+                {({ handleChange, handleSubmit, values }) => (
+                  <View style={styles.form}>
+                    <TextInput
+                      placeholder="Name"
+                      onChangeText={handleChange("user")}
+                      value={values.user}
+                      style={styles.input}
+                      returnKeyType="done"
+                    />
+                    <TextInput
+                      placeholder="City"
+                      style={styles.input}
+                      onChangeText={handleChange("location")}
+                      value={values.location}
+                      returnKeyType="done"
+                    />
+                    <TextInput
+                      placeholder="Date"
+                      style={styles.input}
+                      onChangeText={handleChange("date")}
+                      value={values.date}
+                      returnKeyType="done"
+                    />
+                    <TextInput
+                      placeholder="Rating"
+                      style={styles.input}
+                      onChangeText={handleChange("rating")}
+                      value={values.rating}
+                      keyboardType="numeric"
+                      returnKeyType="done"
+                    />
+                    <TextInput
+                      multiline
+                      placeholder="Description"
+                      style={[styles.input, { height: 60 }]}
+                      onChangeText={handleChange("review")}
+                      value={values.review}
+                      returnKeyType="done"
+                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        width: "80%",
+                        justifyContent: "space-around",
+                      }}
+                    >
+                      <Pressable
+                        style={[
+                          styles.button,
+                          styles.buttonClose,
+                          { backgroundColor: "red" },
+                        ]}
+                        onPress={() => props.setModalVisible(!modalVisible)}
+                      >
+                        <Text style={styles.textStyle}>Cancel</Text>
+                      </Pressable>
+                      <Pressable
+                        style={[styles.button, styles.buttonClose]}
+                        title="submit"
+                        onPress={handleSubmit}
+                      >
+                        <Text style={styles.textStyle}>Submit</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                )}
+              </Formik>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </View>
   );
@@ -113,6 +172,10 @@ const styles = StyleSheet.create({
     width: "80%",
     marginVertical: 10,
     paddingHorizontal: 10,
+  },
+  form: {
+    width: "100%",
+    alignItems: "center",
   },
 });
 

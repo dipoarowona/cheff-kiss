@@ -11,15 +11,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import ReviewCard from "../Components/ReviewCard";
 import Star from "../Components/star";
 import AddReviewModal from "../Components/AddReviewModal";
+import { useEffect } from "react";
 const RestaurantPage = ({ route, navigation }) => {
   const { name, image } = route.params.data;
-  const nav = (data) => {
-    navigation.navigate("Review", { data, image, name });
-  };
-
   const [modalVisible, setModalVisible] = useState(false);
-
-  const review_data = [
+  const [review_data, setReviewData] = useState([
     {
       id: 1,
       user: "Dipo Arowona",
@@ -92,18 +88,32 @@ const RestaurantPage = ({ route, navigation }) => {
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo ",
       rating: 3.0,
     },
-  ];
-  let overall_rating = 0;
-  review_data.forEach((element) => {
-    overall_rating += element.rating;
-  });
-  overall_rating = (overall_rating / review_data.length).toFixed(1);
+  ]);
+  const [overall_rating, setOverallRating] = useState(0);
+
+  const nav = (data) => {
+    navigation.navigate("Review", { data, image, name });
+  };
+  const update_data = (data) => {
+    const y = review_data.concat(data);
+    console.log(data.id);
+    setReviewData(y);
+  };
+  useEffect(() => {
+    let x = 0;
+    review_data.map((element) => {
+      x = x + element.rating;
+    });
+    setOverallRating((x / review_data.length).toFixed(1));
+  }, [review_data]);
+
   return (
     <View style={styles.container}>
       <AddReviewModal
         visible={modalVisible}
         setModalVisible={setModalVisible}
         name={name}
+        addData={update_data}
       />
       <View style={styles.addReviewView}>
         <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
@@ -137,7 +147,7 @@ const RestaurantPage = ({ route, navigation }) => {
       <FlatList
         data={review_data}
         renderItem={({ item }) => <ReviewCard nav={nav} data={item} />}
-        keyExtractor={(item) => item.user}
+        keyExtractor={(item) => item.id}
       />
     </View>
   );

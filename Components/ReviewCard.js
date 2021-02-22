@@ -12,7 +12,7 @@ const ReviewCard = (props) => {
         <View style={styles.cardContent}>
           <Text style={styles.name}>{user}</Text>
           <Text style={styles.subtitle}>
-            {rating.toFixed(1)} | {location} | {date}
+            {Math.round(rating * 10) / 10} | {location} | {date}
           </Text>
           <Text style={styles.review}>{review}</Text>
         </View>
