@@ -10,57 +10,28 @@ import ReviewPage from "./screens/ReviewPage";
 const Stack = createStackNavigator();
 
 export default function App() {
+  const options = {
+    title: "Cheff's Kiss",
+    headerStyle: {
+      backgroundColor: "#C94545",
+      height: 110,
+    },
+    headerTintColor: "#fff",
+    headerTitleStyle: {
+      fontWeight: "bold",
+      fontSize: 40,
+    },
+  };
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={HomePage}
-          options={{
-            title: "Cheff's Kiss",
-            headerStyle: {
-              backgroundColor: "#C94545",
-              height: 110,
-            },
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              fontWeight: "bold",
-              fontSize: 40,
-            },
-          }}
-        />
+        <Stack.Screen name="Home" component={HomePage} options={options} />
         <Stack.Screen
           name="Restaurant"
           component={RestaurantPage}
-          options={{
-            title: "Cheff's Kiss",
-            headerStyle: {
-              backgroundColor: "#C94545",
-              height: 110,
-            },
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              fontWeight: "bold",
-              fontSize: 40,
-            },
-          }}
+          options={options}
         />
-        <Stack.Screen
-          name="Review"
-          component={ReviewPage}
-          options={{
-            title: "Cheff's Kiss",
-            headerStyle: {
-              backgroundColor: "#C94545",
-              height: 110,
-            },
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              fontWeight: "bold",
-              fontSize: 40,
-            },
-          }}
-        />
+        <Stack.Screen name="Review" component={ReviewPage} options={options} />
       </Stack.Navigator>
     </NavigationContainer>
   );
