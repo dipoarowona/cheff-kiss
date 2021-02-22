@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Formik } from "formik";
 import RestaurantCard from "../Components/RestaurantCard";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 const Home = ({ navigation }) => {
   const restaurant_data = [
     {
@@ -50,6 +50,18 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       <View style={{ width: "90%", alignSelf: "center" }}>
         <Text style={styles.textHeader}>Restaurants</Text>
+      </View>
+      <View style={styles.addReviewView}>
+        <TouchableOpacity
+          onPress={() => console.warn("should navigate to profile page")}
+        >
+          <FontAwesome
+            style={styles.addIcon}
+            name="user-circle-o"
+            size={60}
+            color="#C94545"
+          />
+        </TouchableOpacity>
       </View>
 
       <Formik
@@ -140,6 +152,25 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     flexDirection: "row",
+  },
+  addReviewView: {
+    position: "absolute",
+    right: 40,
+    bottom: "23%",
+    zIndex: 10,
+    backgroundColor: "white",
+    borderRadius: 50,
+    padding: 20,
+  },
+  addIcon: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5.0,
+    elevation: 10,
   },
 });
 

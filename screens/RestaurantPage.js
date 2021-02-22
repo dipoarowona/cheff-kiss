@@ -125,6 +125,7 @@ const RestaurantPage = ({ route, navigation }) => {
           />
         </TouchableOpacity>
       </View>
+
       <View style={styles.card}>
         <Image style={styles.image} source={image} />
         <Text style={styles.textHeader}>{name}</Text>
