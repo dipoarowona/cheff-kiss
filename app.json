@@ -4,11 +4,10 @@
     "slug": "cheff-kiss",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "",
     "splash": {
-      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#C94545"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

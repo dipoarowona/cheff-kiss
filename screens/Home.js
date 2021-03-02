@@ -40,6 +40,14 @@ const Home = ({ navigation }) => {
       name: "Domino's Pizza",
       image: require("../assets/dominoes.png"),
     },
+    {
+      name: "Domo's Pizza",
+      image: require("../assets/dominoes.png"),
+    },
+    {
+      name: "Domiano's Pizza",
+      image: require("../assets/dominoes.png"),
+    },
   ];
 
   const restaurant_redirect = (data) => {
@@ -52,9 +60,7 @@ const Home = ({ navigation }) => {
         <Text style={styles.textHeader}>Restaurants</Text>
       </View>
       <View style={styles.addReviewView}>
-        <TouchableOpacity
-          onPress={() => console.warn("should navigate to profile page")}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <FontAwesome
             style={styles.addIcon}
             name="user-circle-o"

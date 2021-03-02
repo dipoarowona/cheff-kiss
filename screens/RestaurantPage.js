@@ -148,7 +148,7 @@ const RestaurantPage = ({ route, navigation }) => {
       <FlatList
         data={review_data}
         renderItem={({ item }) => <ReviewCard nav={nav} data={item} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
       />
     </View>
   );
