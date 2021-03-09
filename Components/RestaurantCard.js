@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-
+import Star from "./star";
 const RestaurantCard = (props) => {
-  const { name, image } = props.info;
+  const { name, image, rating } = props.info;
 
   return (
     <View style={styles.container}>
@@ -13,6 +13,9 @@ const RestaurantCard = (props) => {
         <Image style={styles.image} source={image} />
         <View style={styles.bottomContainer}>
           <Text style={styles.text}>{name}</Text>
+          <View style={{ width: "30%", flexDirection: "row" }}>
+            <Star rating={rating} size={20} />
+          </View>
         </View>
       </TouchableOpacity>
     </View>
@@ -53,7 +56,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
-    justifyContent: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   text: {
     fontSize: 18,

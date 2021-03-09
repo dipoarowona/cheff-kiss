@@ -14,14 +14,12 @@ import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 const Profile = ({ navigation, setSignedIn }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => setSignedIn(false)}>
-        <MaterialIcons
-          name="settings"
-          color="#000"
-          size={30}
-          style={styles.settingsGear}
-        />
-      </TouchableOpacity>
+      <View style={styles.settingsGear}>
+        {/* GEAR NOT WORKING SO WE GOTTA FIX THAT */}
+        <TouchableOpacity onPress={() => setSignedIn(false)}>
+          <Text>asf</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.headerRow}>
         <Image
           style={styles.profilePic}
@@ -49,8 +47,12 @@ const Profile = ({ navigation, setSignedIn }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.reviewMediaHeader}>
-        <Text>Reviews</Text>
-        <Text>Media</Text>
+        <TouchableOpacity>
+          <Text>Reviews</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text>Media</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.addReviewView}>
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>

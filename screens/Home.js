@@ -15,38 +15,47 @@ const Home = ({ navigation }) => {
     {
       name: "McDonalds",
       image: require("../assets/mcdonalds.png"),
+      rating: 3.4,
     },
     {
       name: "Wendy's",
       image: require("../assets/wendys.png"),
+      rating: 2.0,
     },
     {
       name: "Buffalo Wild Wings",
       image: require("../assets/bww.png"),
+      rating: 5,
     },
     {
       name: "Burger Priest",
       image: require("../assets/bp.png"),
+      rating: 1.7,
     },
     {
       name: "The Keg",
       image: require("../assets/keg.png"),
+      rating: 4.6,
     },
     {
       name: "Red Lobster",
       image: require("../assets/rl.png"),
+      rating: 3.4,
     },
     {
       name: "Domino's Pizza",
       image: require("../assets/dominoes.png"),
+      rating: 3.4,
     },
     {
       name: "Domo's Pizza",
+      rating: 3.4,
       image: require("../assets/dominoes.png"),
     },
     {
       name: "Domiano's Pizza",
       image: require("../assets/dominoes.png"),
+      rating: 3.4,
     },
   ];
 

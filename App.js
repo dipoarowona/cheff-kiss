@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 
+import "./api/database";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomePage from "./screens/Home";
