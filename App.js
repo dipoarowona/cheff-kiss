@@ -13,6 +13,7 @@ import ProfilePage from "./screens/profile";
 import LandingPage from "./screens/landingScreen";
 import LoginPage from "./screens/login";
 import SignUpPage from "./screens/signup";
+import SplashScreen from "./screens/Splashscreen";
 
 const Stack = createStackNavigator();
 
@@ -21,13 +22,16 @@ export default function App() {
     firebase.initializeApp(firebaseConfig);
   }
   const [signedIn, setSignedIn] = useState(false);
+  const [splashloading, setSplashLoading] = useState(true);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         setSignedIn(true);
+        setSplashLoading(false);
       } else {
         setSignedIn(false);
+        setSplashLoading(false);
       }
     });
   });
@@ -70,6 +74,14 @@ export default function App() {
             name="Review"
             component={ReviewPage}
             options={options}
+          />
+        </Stack.Navigator>
+      ) : splashloading ? (
+        <Stack.Navigator initialRouteName="Splash">
+          <Stack.Screen
+            name="Splah"
+            component={SplashScreen}
+            options={{ ...LoginOptions }}
           />
         </Stack.Navigator>
       ) : (

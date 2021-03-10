@@ -26,8 +26,10 @@ const login = ({ setSignedIn }) => {
             password: "",
           }}
           onSubmit={async (user) => {
-            await login_user(user);
-            setSignedIn(true);
+            const loginValid = await login_user(user);
+            if (loginValid) {
+              setSignedIn(true);
+            }
           }}
         >
           {({ handleChange, handleSubmit, values }) => (

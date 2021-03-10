@@ -27,8 +27,10 @@ const signup = ({ setSignedIn }) => {
           }}
           onSubmit={async (user) => {
             //form validations n shit
-            await create_new_user(user);
-            setSignedIn(true);
+            const signupValid = await create_new_user(user);
+            if (signupValid) {
+              setSignedIn(true);
+            }
           }}
         >
           {({ handleChange, handleSubmit, values }) => (
