@@ -8,9 +8,8 @@ import {
 } from "react-native";
 import { Formik } from "formik";
 
-import { login_user } from "../api/user";
-
-const login = ({ setSignedIn }) => {
+import { create_new_user } from "../api/user";
+const signup = ({ setSignedIn }) => {
   return (
     <View style={styles.container}>
       <View
@@ -22,18 +21,30 @@ const login = ({ setSignedIn }) => {
       >
         <Formik
           initialValues={{
+            name: "",
             email: "",
             password: "",
           }}
           onSubmit={async (user) => {
-            await login_user(user);
+            //form validations n shit
+            await create_new_user(user);
             setSignedIn(true);
           }}
         >
           {({ handleChange, handleSubmit, values }) => (
             <View style={styles.form}>
               <View style={{ width: "80%" }}>
-                <Text style={{ color: "#fff", fontSize: 20 }}>Username</Text>
+                <Text style={{ color: "#fff", fontSize: 20 }}>Full Name</Text>
+              </View>
+              <TextInput
+                placeholder="Full Name"
+                onChangeText={handleChange("name")}
+                value={values.name}
+                style={styles.input}
+                returnKeyType="done"
+              />
+              <View style={{ width: "80%" }}>
+                <Text style={{ color: "#fff", fontSize: 20 }}>Email</Text>
               </View>
               <TextInput
                 placeholder="Email"
@@ -65,7 +76,7 @@ const login = ({ setSignedIn }) => {
                   title="submit"
                   onPress={handleSubmit}
                 >
-                  <Text style={styles.textStyle}>Login</Text>
+                  <Text style={styles.textStyle}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -114,4 +125,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default login;
+export default signup;

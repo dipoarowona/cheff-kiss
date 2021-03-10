@@ -15,7 +15,7 @@ const landingscreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate("LoginPage")}>
           <Text style={styles.text}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("SignUpPage")}>
           <Text style={styles.text}>Sign Up</Text>
         </TouchableOpacity>
       </View>

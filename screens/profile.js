@@ -1,23 +1,21 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  TextInput,
-  Image,
-  TouchableOpacity,
-} from "react-native";
-import { Formik } from "formik";
-import RestaurantCard from "../Components/RestaurantCard";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import * as firebase from "firebase";
+import { logout } from "../api/user";
 const Profile = ({ navigation, setSignedIn }) => {
+  let currentUser = firebase.auth().currentUser;
   return (
     <View style={styles.container}>
       <View style={styles.settingsGear}>
         {/* GEAR NOT WORKING SO WE GOTTA FIX THAT */}
-        <TouchableOpacity onPress={() => setSignedIn(false)}>
-          <Text>asf</Text>
+        <TouchableOpacity
+          onPress={() => {
+            logout();
+            setSignedIn(false);
+          }}
+        >
+          <Text>Logout</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.headerRow}>
@@ -39,7 +37,7 @@ const Profile = ({ navigation, setSignedIn }) => {
           <Text>123</Text>
         </View>
       </View>
-      <Text style={styles.username}> Dipo Arowona</Text>
+      <Text style={styles.username}>{currentUser.displayName}</Text>
       <View style={styles.bioEditView}>
         <Text>Bio</Text>
         <TouchableOpacity style={styles.editAccountBtn}>
@@ -73,11 +71,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#E2E2E2",
     height: "100%",
   },
-  settingsGear: {
-    position: "absolute",
-    right: 10,
-    top: 3,
-  },
+  // settingsGear: {
+  //   position: "absolute",
+  //   right: 10,
+  //   top: 3,
+  // },
   headerRow: {
     flexDirection: "row",
     paddingTop: 15,
@@ -92,7 +90,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 18,
-    paddingHorizontal: "2.5%",
+    paddingHorizontal: "5%",
     paddingVertical: 15,
     fontWeight: "600",
   },

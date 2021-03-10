@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
 
-import "./api/database";
+import * as firebase from "firebase";
+import { firebaseConfig } from "./api/database";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -11,10 +12,26 @@ import ReviewPage from "./screens/ReviewPage";
 import ProfilePage from "./screens/profile";
 import LandingPage from "./screens/landingScreen";
 import LoginPage from "./screens/login";
+import SignUpPage from "./screens/signup";
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        setSignedIn(true);
+      } else {
+        setSignedIn(false);
+      }
+    });
+  });
+
   const options = {
     title: "Cheff's Kiss",
     headerBackTitleVisible: false,
@@ -27,10 +44,6 @@ export default function App() {
       fontWeight: "bold",
       fontSize: 40,
     },
-  };
-  const [signedIn, setSignedIn] = useState(false);
-  const x = () => {
-    console.warn("OK");
   };
   const LoginOptions = { ...options };
   LoginOptions.headerStyle.shadowOffset = { height: 0, width: 0 };
@@ -77,6 +90,9 @@ export default function App() {
 
           <Stack.Screen name="LoginPage" options={{ ...LoginOptions }}>
             {(props) => <LoginPage {...props} setSignedIn={setSignedIn} />}
+          </Stack.Screen>
+          <Stack.Screen name="SignUpPage" options={{ ...LoginOptions }}>
+            {(props) => <SignUpPage {...props} setSignedIn={setSignedIn} />}
           </Stack.Screen>
         </Stack.Navigator>
       )}
