@@ -16,6 +16,11 @@ const create_new_user = async ({ name, email, password }) => {
     await firebase.auth().createUserWithEmailAndPassword(email, password);
     const currentUser = firebase.auth().currentUser;
     currentUser.updateProfile({ displayName: name });
+    const db = firebase.firestore();
+    await db.collection("Users").doc(currentUser.uid).set({
+      name,
+      email,
+    });
   } catch (err) {
     Alert.alert("There is something wrong(cnu)!!!!", err.message);
   }

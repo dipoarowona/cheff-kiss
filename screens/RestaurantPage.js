@@ -12,83 +12,11 @@ import ReviewCard from "../Components/ReviewCard";
 import Star from "../Components/star";
 import AddReviewModal from "../Components/AddReviewModal";
 import { useEffect } from "react";
+import { render_posts } from "../api/posts";
 const RestaurantPage = ({ route, navigation }) => {
   const { name, image } = route.params.data;
   const [modalVisible, setModalVisible] = useState(false);
-  const [review_data, setReviewData] = useState([
-    {
-      id: 1,
-      user: "Dipo Arowona",
-      location: "Hamilton, Ontario",
-      date: "March 1, 2021",
-      review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo posuere consectetur mi tristique luctus tristique tortor risus. Dignissim tortor facilisis quam dictum sed quisque tortor.",
-      rating: 4.4,
-    },
-    {
-      id: 2,
-      user: "Billy Jimbo",
-      location: "Toronto, Ontario",
-      date: "March 1, 2021",
-      review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo ",
-      rating: 4.0,
-    },
-    {
-      id: 3,
-      user: "Latifa Arowona",
-      location: "Whitby, Ontario",
-      date: "March 1, 2021",
-      review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo ",
-      rating: 3.0,
-    },
-    {
-      id: 4,
-      user: "Debisi Ajibola",
-      location: "Hamilton, Ontario",
-      date: "March 1, 2021",
-      review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo ",
-      rating: 3.0,
-    },
-    {
-      id: 5,
-      user: "Sarah King",
-      location: "Hamilton, Ontario",
-      date: "March 1, 2021",
-      review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo ",
-      rating: 5.0,
-    },
-    {
-      id: 6,
-      user: "Lebron James",
-      location: "Hamilton, Ontario",
-      date: "March 1, 2021",
-      review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo ",
-      rating: 3.0,
-    },
-    {
-      id: 7,
-      user: "Robert Downey Jr.",
-      location: "Hamilton, Ontario",
-      date: "March 1, 2021",
-      review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo ",
-      rating: 4.5,
-    },
-    {
-      id: 8,
-      user: "Dipo Arwona",
-      location: "Hamilton, Ontario",
-      date: "March 1, 2021",
-      review:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat vestibulum id cras quisque curabitur nec et sodales felis. Eget commodo ",
-      rating: 3.0,
-    },
-  ]);
+  const [review_data, setReviewData] = useState([]);
   const [overall_rating, setOverallRating] = useState(0);
 
   const nav = (data) => {
@@ -98,13 +26,19 @@ const RestaurantPage = ({ route, navigation }) => {
     const y = review_data.concat(data);
     setReviewData(y);
   };
+  const fetch = async () => {
+    const x = await render_posts(name);
+    return x;
+  };
   useEffect(() => {
-    let x = 0;
-    review_data.map((element) => {
-      x = x + element.rating;
+    fetch().then((data) => {
+      setReviewData(data);
     });
-    setOverallRating((x / review_data.length).toFixed(1));
-  }, [review_data]);
+    // review_data.map((element) => {
+    //   x = x + element.rating;
+    // });
+    // setOverallRating((x / review_data.length).toFixed(1));
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -144,11 +78,15 @@ const RestaurantPage = ({ route, navigation }) => {
         </View>
       </View>
 
-      <FlatList
-        data={review_data}
-        renderItem={({ item }) => <ReviewCard nav={nav} data={item} />}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      {!review_data ? (
+        <Text style={{ fontSize: 50, color: "grey" }}>NO DATA!</Text>
+      ) : (
+        <FlatList
+          data={review_data}
+          renderItem={({ item }) => <ReviewCard nav={nav} data={item} />}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </View>
   );
 };

@@ -1,6 +1,8 @@
-import * as firebase from "firebase";
-import "firebase/firestore";
-import { Alert } from "react-native";
+// import * as firebase from "firebase";
+// import "firebase/firestore";
+require("firebase/firestore");
+// import { Alert } from "react-native";
+const firebase = require("firebase");
 
 //post
 const post = async (info) => {
@@ -24,24 +26,35 @@ const post = async (info) => {
 };
 
 //create new user
-const create_new_user = async ({ name, email, password }) => {
+const render_posts = async (restaurant) => {
   try {
     const db = firebase.firestore();
-    await firebase.auth().createUserWithEmailAndPassword(email, password);
-    const currentUser = firebase.auth().currentUser;
-    currentUser.updateProfile({ displayName: name });
+    const data = await db
+      .collection("Posts")
+      .where("restaurant", "==", restaurant)
+      .limit(4)
+      .get();
+    if (data.empty) {
+      console.log("No matching documents.");
+      return;
+    }
+    const posts = [];
+    data.forEach((doc) => {
+      posts.push({
+        id: doc.id,
+        review: doc.data().review,
+        rate: doc.data().rate,
+        date: doc.data().date,
+        location: doc.data().location,
+      });
+    });
+
+    console.log("posts for", restaurant, "fetched");
+
+    return posts;
   } catch (err) {
-    Alert.alert("There is something wrong(cnu)!!!!", err.message);
+    console.log("shit went wrong");
   }
 };
 
-//logout user
-const logout = async () => {
-  try {
-    await firebase.auth().signOut();
-  } catch (err) {
-    Alert.alert("There is something wrong!!!!", err.message);
-  }
-};
-
-module.exports = { create_new_user, post, logout };
+module.exports = { render_posts, post };

@@ -2,7 +2,8 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 
 const ReviewCard = (props) => {
-  const { user, location, date, review, rating } = props.data;
+  const { id, location, date, review, rate } = props.data;
+  const user = id;
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -12,7 +13,7 @@ const ReviewCard = (props) => {
         <View style={styles.cardContent}>
           <Text style={styles.name}>{user}</Text>
           <Text style={styles.subtitle}>
-            {Math.round(rating * 10) / 10} | {location} | {date}
+            {Math.round(rate * 10) / 10} | {location} | {date}
           </Text>
           <Text style={styles.review}>{review}</Text>
         </View>
