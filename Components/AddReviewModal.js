@@ -8,10 +8,11 @@ import {
   Pressable,
   TextInput,
   TouchableWithoutFeedback,
-  keyboard,
   Keyboard,
 } from "react-native";
 import { Formik } from "formik";
+
+import { post } from "../api/posts";
 
 const AddReviewModal = (props) => {
   const modalVisible = props.visible;
@@ -42,6 +43,14 @@ const AddReviewModal = (props) => {
                   props.addData({
                     id: Math.random() * 10000,
                     user,
+                    location,
+                    date,
+                    rating: parseFloat(rating),
+                    review,
+                  });
+                  post({
+                    name: props.name,
+                    user_id: "currentUser.uid",
                     location,
                     date,
                     rating: parseFloat(rating),
@@ -87,7 +96,6 @@ const AddReviewModal = (props) => {
                       style={[styles.input, { height: 60 }]}
                       onChangeText={handleChange("review")}
                       value={values.review}
-                      returnKeyType="done"
                     />
                     <View
                       style={{

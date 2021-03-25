@@ -96,7 +96,6 @@ const RestaurantPage = ({ route, navigation }) => {
   };
   const update_data = (data) => {
     const y = review_data.concat(data);
-    console.log(data.id);
     setReviewData(y);
   };
   useEffect(() => {
