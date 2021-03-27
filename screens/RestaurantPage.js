@@ -27,7 +27,7 @@ const RestaurantPage = ({ route, navigation }) => {
     setReviewData(y);
   };
   const fetch = async () => {
-    const x = await render_posts(name);
+    const x = await render_posts("restaurant", name);
     setReviewData(x);
   };
   useEffect(() => {

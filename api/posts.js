@@ -26,13 +26,13 @@ const post = async (info) => {
 };
 
 //render posts for restaurants
-const render_posts = async (restaurant) => {
+const render_posts = async (query, value) => {
   try {
     const db = firebase.firestore();
     const data = await db
       .collection("Posts")
-      .where("restaurant", "==", restaurant)
-      .limit(3)
+      //   .orderByChild("rate", "desc") some way to sort posts
+      .where(query, "==", value)
       .get();
     if (data.empty) {
       console.log("No matching documents.");
@@ -41,7 +41,6 @@ const render_posts = async (restaurant) => {
     const posts = [];
     data.forEach((doc) => {
       const x = db.collection("Users").doc(doc.data().owner);
-      console.log(x.name);
       posts.push({
         id: doc.id,
         // owner: x.data().name,
@@ -52,7 +51,7 @@ const render_posts = async (restaurant) => {
       });
     });
 
-    console.log("posts for", restaurant, "fetched");
+    console.log("posts for", value, "fetched");
 
     return posts;
   } catch (err) {

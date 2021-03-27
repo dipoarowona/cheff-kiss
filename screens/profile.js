@@ -1,10 +1,33 @@
-import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import * as firebase from "firebase";
+
+import ReviewCard from "../Components/ReviewCard";
+
 import { logout } from "../api/user";
+import { render_posts } from "../api/posts";
 const Profile = ({ navigation, setSignedIn }) => {
   let currentUser = firebase.auth().currentUser;
+  const [review_data, setReviewData] = useState([]);
+
+  const nav = (data) => {
+    navigation.navigate("Review", { data, image, name });
+  };
+  const fetch = async () => {
+    const x = await render_posts("owner", currentUser.uid);
+    setReviewData(x);
+  };
+  useEffect(() => {
+    fetch();
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.settingsGear}>
@@ -52,6 +75,15 @@ const Profile = ({ navigation, setSignedIn }) => {
           <Text>Media</Text>
         </TouchableOpacity>
       </View>
+      {!review_data ? (
+        <Text style={{ fontSize: 50, color: "grey" }}>NO DATA!</Text>
+      ) : (
+        <FlatList
+          data={review_data}
+          renderItem={({ item }) => <ReviewCard nav={nav} data={{ ...item }} />}
+          keyExtractor={(item) => item.id}
+        />
+      )}
       <View style={styles.addReviewView}>
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <FontAwesome
