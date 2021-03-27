@@ -4,15 +4,15 @@ require("firebase/firestore");
 // import { Alert } from "react-native";
 const firebase = require("firebase");
 
-//post
+//create post
 const post = async (info) => {
   try {
     const db = firebase.firestore();
 
     await db.collection("Posts").add({
-      owner: db.collection("users").doc(firebase.auth().currentUser.uid),
+      owner: firebase.auth().currentUser.uid,
       location: info.location,
-      date: info.date,
+      date: firebase.firestore.Timestamp.now(),
       rate: info.rating,
       review: info.review,
       restaurant: info.name,
@@ -25,14 +25,14 @@ const post = async (info) => {
   }
 };
 
-//create new user
+//render posts for restaurants
 const render_posts = async (restaurant) => {
   try {
     const db = firebase.firestore();
     const data = await db
       .collection("Posts")
       .where("restaurant", "==", restaurant)
-      .limit(4)
+      .limit(3)
       .get();
     if (data.empty) {
       console.log("No matching documents.");
@@ -40,11 +40,14 @@ const render_posts = async (restaurant) => {
     }
     const posts = [];
     data.forEach((doc) => {
+      const x = db.collection("Users").doc(doc.data().owner);
+      console.log(x.name);
       posts.push({
         id: doc.id,
+        // owner: x.data().name,
         review: doc.data().review,
         rate: doc.data().rate,
-        date: doc.data().date,
+        date: doc.data().date.toDate().toLocaleString("en-US"),
         location: doc.data().location,
       });
     });
@@ -56,5 +59,7 @@ const render_posts = async (restaurant) => {
     console.log("shit went wrong");
   }
 };
+
+//render posts profiles
 
 module.exports = { render_posts, post };

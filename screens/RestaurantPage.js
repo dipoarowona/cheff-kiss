@@ -28,12 +28,10 @@ const RestaurantPage = ({ route, navigation }) => {
   };
   const fetch = async () => {
     const x = await render_posts(name);
-    return x;
+    setReviewData(x);
   };
   useEffect(() => {
-    fetch().then((data) => {
-      setReviewData(data);
-    });
+    fetch();
     // review_data.map((element) => {
     //   x = x + element.rating;
     // });
@@ -45,6 +43,7 @@ const RestaurantPage = ({ route, navigation }) => {
       <AddReviewModal
         visible={modalVisible}
         setModalVisible={setModalVisible}
+        fetch={fetch}
         name={name}
         addData={update_data}
       />
@@ -83,7 +82,7 @@ const RestaurantPage = ({ route, navigation }) => {
       ) : (
         <FlatList
           data={review_data}
-          renderItem={({ item }) => <ReviewCard nav={nav} data={item} />}
+          renderItem={({ item }) => <ReviewCard nav={nav} data={{ ...item }} />}
           keyExtractor={(item) => item.id}
         />
       )}

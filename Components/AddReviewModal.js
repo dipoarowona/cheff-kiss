@@ -40,22 +40,13 @@ const AddReviewModal = (props) => {
                   review: "",
                 }}
                 onSubmit={({ user, location, date, rating, review }) => {
-                  // props.addData({
-                  //   id: Math.random() * 10000,
-                  //   user,
-                  //   location,
-                  //   date,
-                  //   rating: parseFloat(rating),
-                  //   review,
-                  // });
                   post({
                     name: props.name,
-                    user_id: "currentUser.uid",
                     location,
-                    date,
                     rating: parseFloat(rating),
                     review,
                   });
+                  props.fetch();
                   props.setModalVisible(!modalVisible);
                 }}
               >

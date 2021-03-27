@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import Star from "../Components/star";
 
 const ReviewPage = ({ route, navigation }) => {
-  const { user, location, date, review, rating } = route.params.data;
+  const { id, location, date, review, rate } = route.params.data;
 
   const image = route.params.image;
   const name = route.params.name;
@@ -19,7 +19,7 @@ const ReviewPage = ({ route, navigation }) => {
           alignSelf: "center",
         }}
       >
-        <Text style={styles.username}>{user}</Text>
+        <Text style={styles.username}>{id}</Text>
       </View>
       <View
         style={{
@@ -33,9 +33,9 @@ const ReviewPage = ({ route, navigation }) => {
         <Text>{date}</Text>
       </View>
       <View style={styles.ratingView}>
-        <Text style={styles.rating}>{rating}</Text>
+        <Text style={styles.rating}>{rate}</Text>
         <View style={styles.starView}>
-          <Star rating={rating} />
+          <Star rating={rate} />
         </View>
       </View>
 
