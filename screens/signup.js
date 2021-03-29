@@ -66,6 +66,19 @@ const signup = ({ setSignedIn }) => {
                 secureTextEntry
                 returnKeyType="done"
               />
+              <View style={{ width: "80%" }}>
+                <Text style={{ color: "#fff", fontSize: 20 }}>
+                  Confirm Password
+                </Text>
+              </View>
+              <TextInput
+                placeholder="Password"
+                style={styles.input}
+                onChangeText={handleChange("password")}
+                value={values.password}
+                secureTextEntry
+                returnKeyType="done"
+              />
               <View
                 style={{
                   flexDirection: "row",

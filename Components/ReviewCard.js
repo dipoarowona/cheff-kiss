@@ -2,8 +2,8 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 
 const ReviewCard = (props) => {
-  const { id, location, date, review, rate } = props.data;
-  const user = id;
+  const { owner, location, date, review, rate } = props.data;
+  const user = owner;
   return (
     <View style={styles.container}>
       <TouchableOpacity

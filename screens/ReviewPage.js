@@ -1,16 +1,17 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import Star from "../Components/star";
 
 const ReviewPage = ({ route, navigation }) => {
-  const { id, location, date, review, rate } = route.params.data;
+  const { owner, owner_id, location, date, review, rate } = route.params.data;
 
   const image = route.params.image;
   const name = route.params.name;
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Image style={styles.image} source={image} />
+        <Image style={styles.image} source={{ url: image }} />
         <Text style={styles.textHeader}>{name}</Text>
       </View>
       <View
@@ -19,7 +20,13 @@ const ReviewPage = ({ route, navigation }) => {
           alignSelf: "center",
         }}
       >
-        <Text style={styles.username}>{id}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Profile", { owner_id, owner });
+          }}
+        >
+          <Text style={styles.username}>{owner}</Text>
+        </TouchableOpacity>
       </View>
       <View
         style={{

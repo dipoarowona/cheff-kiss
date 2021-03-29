@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,68 +6,108 @@ import {
   FlatList,
   TextInput,
   TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
 } from "react-native";
 import { Formik } from "formik";
 import RestaurantCard from "../Components/RestaurantCard";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+
+import { render_restaurants } from "../api/restaurants";
+
 const Home = ({ navigation }) => {
-  const restaurant_data = [
-    {
-      name: "McDonalds",
-      image: require("../assets/mcdonalds.png"),
-      rating: 3.4,
-    },
-    {
-      name: "Wendy's",
-      image: require("../assets/wendys.png"),
-      rating: 2.0,
-    },
-    {
-      name: "Buffalo Wild Wings",
-      image: require("../assets/bww.png"),
-      rating: 5,
-    },
-    {
-      name: "Burger Priest",
-      image: require("../assets/bp.png"),
-      rating: 1.7,
-    },
-    {
-      name: "The Keg",
-      image: require("../assets/keg.png"),
-      rating: 4.6,
-    },
-    {
-      name: "Red Lobster",
-      image: require("../assets/rl.png"),
-      rating: 3.4,
-    },
-    {
-      name: "Domino's Pizza",
-      image: require("../assets/dominoes.png"),
-      rating: 3.4,
-    },
-    {
-      name: "Domo's Pizza",
-      rating: 3.4,
-      image: require("../assets/dominoes.png"),
-    },
-    {
-      name: "Domiano's Pizza",
-      image: require("../assets/dominoes.png"),
-      rating: 3.4,
-    },
-  ];
+  const [restaurantData, setRestaurantData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const restaurant_redirect = (data) => {
     navigation.navigate("Restaurant", { data });
   };
 
+  const fetch = async (query) => {
+    setLoading(true);
+    const data = await render_restaurants(query);
+    setRestaurantData(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetch();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <View style={{ width: "90%", alignSelf: "center" }}>
-        <Text style={styles.textHeader}>Restaurants</Text>
-      </View>
+      <ScrollView>
+        <View style={{ width: "90%", alignSelf: "center" }}>
+          <Text style={styles.textHeader}>Restaurants</Text>
+        </View>
+
+        <Formik
+          initialValues={{ search: "" }}
+          onSubmit={(values, { resetForm }) => {
+            // console.warn("Seaching for " + values.search);
+            fetch(values.search);
+            resetForm();
+          }}
+        >
+          {({ handleSubmit, handleChange, values }) => (
+            <View style={styles.form}>
+              <TextInput
+                onSubmitEditing={handleSubmit}
+                style={styles.searchbar}
+                onChangeText={handleChange("search")}
+                placeholder="Search For Restaurant"
+                returnKeyType="done"
+              />
+            </View>
+          )}
+        </Formik>
+        <View
+          style={{
+            width: "90%",
+            alignSelf: "center",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            paddingBottom: 20,
+          }}
+        >
+          <TouchableOpacity style={styles.btn}>
+            <MaterialIcons name="restaurant" size={16} color="black" />
+            <Text>All</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btn}>
+            <MaterialIcons name="near-me" size={16} color="black" />
+            <Text>Near Me</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btn}>
+            <MaterialIcons name="fastfood" size={16} color="black" />
+            <Text>Fast Food</Text>
+          </TouchableOpacity>
+        </View>
+        {loading ? (
+          <View style={{ width: "100%" }}>
+            <Text style={{ fontSize: 50, color: "grey", textAlign: "center" }}>
+              LOADING....
+            </Text>
+          </View>
+        ) : (
+          <>
+            <View style={styles.RestaurantFlatList}>
+              <FlatList
+                data={restaurantData}
+                renderItem={({ item }) => {
+                  return (
+                    <RestaurantCard
+                      info={item}
+                      redirect={restaurant_redirect}
+                    />
+                  );
+                }}
+                keyExtractor={(item) => item.id}
+              />
+            </View>
+          </>
+        )}
+      </ScrollView>
       <View style={styles.addReviewView}>
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <FontAwesome
@@ -78,61 +118,6 @@ const Home = ({ navigation }) => {
           />
         </TouchableOpacity>
       </View>
-
-      <Formik
-        initialValues={{ search: "" }}
-        onSubmit={(values, actions) => {
-          console.warn("Seaching for " + values.search);
-          actions.resetForm();
-        }}
-      >
-        {({ handleSubmit, handleChange, values }) => (
-          <View style={styles.form}>
-            <TextInput
-              onSubmitEditing={handleSubmit}
-              style={styles.searchbar}
-              onChangeText={handleChange("search")}
-              placeholder="Search For Restaurant"
-              returnKeyType="done"
-            />
-          </View>
-        )}
-      </Formik>
-
-      <View
-        style={{
-          width: "90%",
-          alignSelf: "center",
-          flexDirection: "row",
-          justifyContent: "space-around",
-          paddingBottom: 20,
-        }}
-      >
-        <TouchableOpacity style={styles.btn}>
-          <MaterialIcons name="restaurant" size={16} color="black" />
-          <Text>All</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btn}>
-          <MaterialIcons name="near-me" size={16} color="black" />
-          <Text>Near Me</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btn}>
-          <MaterialIcons name="fastfood" size={16} color="black" />
-          <Text>Fast Food</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.RestaurantFlatList}>
-        <FlatList
-          data={restaurant_data}
-          renderItem={({ item }) => {
-            return (
-              <RestaurantCard info={item} redirect={restaurant_redirect} />
-            );
-          }}
-          keyExtractor={(item) => item.name}
-        />
-      </View>
     </View>
   );
 };
@@ -140,10 +125,11 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#E2E2E2",
+    height: "100%",
   },
   RestaurantFlatList: {
     width: "100%",
-    paddingBottom: 390,
+    // paddingBottom: 30,
   },
   textHeader: {
     fontSize: 25,
@@ -170,12 +156,12 @@ const styles = StyleSheet.create({
   },
   addReviewView: {
     position: "absolute",
-    right: 40,
-    bottom: "23%",
+    bottom: "3%",
+    right: "7%",
     zIndex: 10,
     backgroundColor: "white",
     borderRadius: 50,
-    padding: 20,
+    padding: 15,
   },
   addIcon: {
     shadowColor: "#000",

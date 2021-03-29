@@ -33,44 +33,28 @@ const AddReviewModal = (props) => {
               <Text style={styles.headerText}>New Review For {props.name}</Text>
               <Formik
                 initialValues={{
-                  user: "",
                   location: "",
-                  date: "",
                   rating: "",
                   review: "",
                 }}
-                onSubmit={({ user, location, date, rating, review }) => {
+                onSubmit={({ location, rating, review }) => {
                   post({
                     name: props.name,
                     location,
                     rating: parseFloat(rating),
                     review,
                   });
-                  props.fetch();
                   props.setModalVisible(!modalVisible);
+                  props.fetch();
                 }}
               >
                 {({ handleChange, handleSubmit, values }) => (
                   <View style={styles.form}>
                     <TextInput
-                      placeholder="Name"
-                      onChangeText={handleChange("user")}
-                      value={values.user}
-                      style={styles.input}
-                      returnKeyType="done"
-                    />
-                    <TextInput
                       placeholder="City"
                       style={styles.input}
                       onChangeText={handleChange("location")}
                       value={values.location}
-                      returnKeyType="done"
-                    />
-                    <TextInput
-                      placeholder="Date"
-                      style={styles.input}
-                      onChangeText={handleChange("date")}
-                      value={values.date}
                       returnKeyType="done"
                     />
                     <TextInput
@@ -84,7 +68,7 @@ const AddReviewModal = (props) => {
                     <TextInput
                       multiline
                       placeholder="Description"
-                      style={[styles.input, { height: 60 }]}
+                      style={[styles.input, { height: 130 }]}
                       onChangeText={handleChange("review")}
                       value={values.review}
                     />

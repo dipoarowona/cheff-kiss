@@ -10,7 +10,8 @@ const post = async (info) => {
     const db = firebase.firestore();
 
     await db.collection("Posts").add({
-      owner: firebase.auth().currentUser.uid,
+      owner_id: firebase.auth().currentUser.uid,
+      owner_name: firebase.auth().currentUser.displayName,
       location: info.location,
       date: firebase.firestore.Timestamp.now(),
       rate: info.rating,
@@ -26,24 +27,31 @@ const post = async (info) => {
 };
 
 //render posts for restaurants
-const render_posts = async (query, value) => {
+const render_posts = async (query, value, filter) => {
   try {
+    var data = undefined;
     const db = firebase.firestore();
-    const data = await db
-      .collection("Posts")
-      //   .orderByChild("rate", "desc") some way to sort posts
-      .where(query, "==", value)
-      .get();
+
+    if (filter) {
+      data = await db
+        .collection("Posts")
+        .where(query, "==", value)
+        .orderBy("rate", filter)
+        .get();
+    } else {
+      data = await db.collection("Posts").where(query, "==", value).get();
+    }
+
     if (data.empty) {
       console.log("No matching documents.");
       return;
     }
     const posts = [];
     data.forEach((doc) => {
-      const x = db.collection("Users").doc(doc.data().owner);
       posts.push({
         id: doc.id,
-        // owner: x.data().name,
+        owner_id: doc.data().owner_id,
+        owner: doc.data().owner_name,
         review: doc.data().review,
         rate: doc.data().rate,
         date: doc.data().date.toDate().toLocaleString("en-US"),
@@ -55,7 +63,7 @@ const render_posts = async (query, value) => {
 
     return posts;
   } catch (err) {
-    console.log("shit went wrong");
+    console.log("shit went wrong" + err);
   }
 };
 

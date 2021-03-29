@@ -14,16 +14,22 @@ import ReviewCard from "../Components/ReviewCard";
 
 import { logout } from "../api/user";
 import { render_posts } from "../api/posts";
-const Profile = ({ navigation, setSignedIn }) => {
+
+const Profile = ({ route, navigation, setSignedIn }) => {
   let currentUser = firebase.auth().currentUser;
+  const id = route.params ? route.params.owner_id : currentUser.uid;
+  const username = route.params ? route.params.owner : currentUser.displayName;
   const [review_data, setReviewData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const nav = (data) => {
     navigation.navigate("Review", { data, image, name });
   };
   const fetch = async () => {
-    const x = await render_posts("owner", currentUser.uid);
+    setLoading(true);
+    const x = await render_posts("owner_id", id);
     setReviewData(x);
+    setLoading(false);
   };
   useEffect(() => {
     fetch();
@@ -60,12 +66,16 @@ const Profile = ({ navigation, setSignedIn }) => {
           <Text>123</Text>
         </View>
       </View>
-      <Text style={styles.username}>{currentUser.displayName}</Text>
+      <Text style={styles.username}>{username}</Text>
       <View style={styles.bioEditView}>
         <Text>Bio</Text>
-        <TouchableOpacity style={styles.editAccountBtn}>
-          <Text>Edit Account</Text>
-        </TouchableOpacity>
+        {route.params ? (
+          <></>
+        ) : (
+          <TouchableOpacity style={styles.editAccountBtn}>
+            <Text>Edit Account</Text>
+          </TouchableOpacity>
+        )}
       </View>
       <View style={styles.reviewMediaHeader}>
         <TouchableOpacity>
@@ -75,14 +85,32 @@ const Profile = ({ navigation, setSignedIn }) => {
           <Text>Media</Text>
         </TouchableOpacity>
       </View>
-      {!review_data ? (
-        <Text style={{ fontSize: 50, color: "grey" }}>NO DATA!</Text>
+      {loading ? (
+        <View style={{ width: "100%" }}>
+          <Text style={{ fontSize: 50, color: "grey", textAlign: "center" }}>
+            LOADING....
+          </Text>
+        </View>
       ) : (
-        <FlatList
-          data={review_data}
-          renderItem={({ item }) => <ReviewCard nav={nav} data={{ ...item }} />}
-          keyExtractor={(item) => item.id}
-        />
+        <>
+          {!review_data ? (
+            <View style={{ width: "100%" }}>
+              <Text
+                style={{ fontSize: 50, color: "grey", textAlign: "center" }}
+              >
+                NO DATA!
+              </Text>
+            </View>
+          ) : (
+            <FlatList
+              data={review_data}
+              renderItem={({ item }) => (
+                <ReviewCard nav={nav} data={{ ...item }} />
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          )}
+        </>
       )}
       <View style={styles.addReviewView}>
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>

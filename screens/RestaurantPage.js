@@ -13,11 +13,18 @@ import Star from "../Components/star";
 import AddReviewModal from "../Components/AddReviewModal";
 import { useEffect } from "react";
 import { render_posts } from "../api/posts";
+
 const RestaurantPage = ({ route, navigation }) => {
-  const { name, image } = route.params.data;
+  const { name, image, rating } = route.params.data;
   const [modalVisible, setModalVisible] = useState(false);
   const [review_data, setReviewData] = useState([]);
-  const [overall_rating, setOverallRating] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  var [isPress, setIsPress] = useState({
+    recommended: true,
+    top: false,
+    critical: false,
+  });
 
   const nav = (data) => {
     navigation.navigate("Review", { data, image, name });
@@ -26,16 +33,14 @@ const RestaurantPage = ({ route, navigation }) => {
     const y = review_data.concat(data);
     setReviewData(y);
   };
-  const fetch = async () => {
-    const x = await render_posts("restaurant", name);
+  const fetch = async (filter) => {
+    setLoading(true);
+    const x = await render_posts("restaurant", name, filter);
     setReviewData(x);
+    setLoading(false);
   };
   useEffect(() => {
     fetch();
-    // review_data.map((element) => {
-    //   x = x + element.rating;
-    // });
-    // setOverallRating((x / review_data.length).toFixed(1));
   }, []);
 
   return (
@@ -59,32 +64,103 @@ const RestaurantPage = ({ route, navigation }) => {
       </View>
 
       <View style={styles.card}>
-        <Image style={styles.image} source={image} />
+        <Image style={styles.image} source={{ url: image }} />
         <Text style={styles.textHeader}>{name}</Text>
       </View>
       <View style={styles.ratingView}>
-        <Text style={styles.rating}>{overall_rating}</Text>
+        <Text style={styles.rating}>{rating}</Text>
         <View style={styles.starView}>
-          <Star rating={overall_rating} />
+          <Star rating={rating} />
         </View>
       </View>
 
       <View style={styles.reviewHeaderView}>
         <View style={styles.reviewHeaderSubView}>
-          <Text style={{ fontSize: 20 }}>Recommended</Text>
-          <Text style={{ fontSize: 20, color: "grey" }}>Top Rated</Text>
-          <Text style={{ fontSize: 20, color: "grey" }}>Most Critical</Text>
+          <TouchableOpacity
+            onPress={() => {
+              fetch();
+              setIsPress({
+                recommended: true,
+                top: false,
+                critical: false,
+              });
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                color: isPress.recommended ? "black" : "grey",
+              }}
+            >
+              Recommended
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              fetch("desc");
+              setIsPress({
+                recommended: false,
+                top: true,
+                critical: false,
+              });
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                color: isPress.top ? "black" : "grey",
+              }}
+            >
+              Top Rated
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              fetch("asc");
+              setIsPress({
+                recommended: false,
+                top: false,
+                critical: true,
+              });
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                color: isPress.critical ? "black" : "grey",
+              }}
+            >
+              Most Critical
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      {!review_data ? (
-        <Text style={{ fontSize: 50, color: "grey" }}>NO DATA!</Text>
+      {loading ? (
+        <View style={{ width: "100%" }}>
+          <Text style={{ fontSize: 50, color: "grey", textAlign: "center" }}>
+            LOADING....
+          </Text>
+        </View>
       ) : (
-        <FlatList
-          data={review_data}
-          renderItem={({ item }) => <ReviewCard nav={nav} data={{ ...item }} />}
-          keyExtractor={(item) => item.id}
-        />
+        <>
+          {!review_data ? (
+            <View style={{ width: "100%" }}>
+              <Text
+                style={{ fontSize: 50, color: "grey", textAlign: "center" }}
+              >
+                NO DATA!
+              </Text>
+            </View>
+          ) : (
+            <FlatList
+              data={review_data}
+              renderItem={({ item }) => (
+                <ReviewCard nav={nav} data={{ ...item }} />
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          )}
+        </>
       )}
     </View>
   );

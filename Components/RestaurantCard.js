@@ -3,14 +3,13 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import Star from "./star";
 const RestaurantCard = (props) => {
   const { name, image, rating } = props.info;
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.card}
         onPress={() => props.redirect(props.info)}
       >
-        <Image style={styles.image} source={image} />
+        <Image style={styles.image} source={{ url: image }} />
         <View style={styles.bottomContainer}>
           <Text style={styles.text}>{name}</Text>
           <View style={{ width: "30%", flexDirection: "row" }}>
