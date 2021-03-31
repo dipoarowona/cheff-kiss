@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Formik } from "formik";
-
+import { signUpValidationSchema } from "../Components/formValidation";
 import { create_new_user } from "../api/user";
 const signup = ({ setSignedIn }) => {
   return (
@@ -20,10 +20,12 @@ const signup = ({ setSignedIn }) => {
         }}
       >
         <Formik
+          validationSchema={signUpValidationSchema}
           initialValues={{
             name: "",
             email: "",
             password: "",
+            confirmPassword: "",
           }}
           onSubmit={async (user) => {
             //form validations n shit
@@ -33,7 +35,7 @@ const signup = ({ setSignedIn }) => {
             }
           }}
         >
-          {({ handleChange, handleSubmit, values }) => (
+          {({ handleChange, handleSubmit, values, errors }) => (
             <View style={styles.form}>
               <View style={{ width: "80%" }}>
                 <Text style={{ color: "#fff", fontSize: 20 }}>Full Name</Text>
@@ -45,6 +47,11 @@ const signup = ({ setSignedIn }) => {
                 style={styles.input}
                 returnKeyType="done"
               />
+              {errors.name && (
+                <Text style={{ fontSize: 14, color: "white" }}>
+                  {errors.name}
+                </Text>
+              )}
               <View style={{ width: "80%" }}>
                 <Text style={{ color: "#fff", fontSize: 20 }}>Email</Text>
               </View>
@@ -55,6 +62,11 @@ const signup = ({ setSignedIn }) => {
                 style={styles.input}
                 returnKeyType="done"
               />
+              {errors.email && (
+                <Text style={{ fontSize: 14, color: "white" }}>
+                  {errors.email}
+                </Text>
+              )}
               <View style={{ width: "80%" }}>
                 <Text style={{ color: "#fff", fontSize: 20 }}>Password</Text>
               </View>
@@ -66,19 +78,31 @@ const signup = ({ setSignedIn }) => {
                 secureTextEntry
                 returnKeyType="done"
               />
+              {errors.password && (
+                <Text style={{ fontSize: 14, color: "white" }}>
+                  {errors.password}
+                </Text>
+              )}
               <View style={{ width: "80%" }}>
                 <Text style={{ color: "#fff", fontSize: 20 }}>
                   Confirm Password
                 </Text>
               </View>
               <TextInput
-                placeholder="Password"
+                placeholder="Confirm Password"
                 style={styles.input}
-                onChangeText={handleChange("password")}
-                value={values.password}
+                onChangeText={handleChange("confirmPassword")}
+                value={values.confirmPassword}
                 secureTextEntry
                 returnKeyType="done"
               />
+              {errors.confirmPassword && (
+                <Text
+                  style={{ paddingBottom: 10, fontSize: 14, color: "white" }}
+                >
+                  {errors.confirmPassword}
+                </Text>
+              )}
               <View
                 style={{
                   flexDirection: "row",

@@ -11,7 +11,7 @@ import {
   Keyboard,
 } from "react-native";
 import { Formik } from "formik";
-
+import { postValidationSchema } from "../Components/formValidation";
 import { post } from "../api/posts";
 
 const AddReviewModal = (props) => {
@@ -32,6 +32,7 @@ const AddReviewModal = (props) => {
             <View style={styles.modalView}>
               <Text style={styles.headerText}>New Review For {props.name}</Text>
               <Formik
+                validationSchema={postValidationSchema}
                 initialValues={{
                   location: "",
                   rating: "",
@@ -49,7 +50,7 @@ const AddReviewModal = (props) => {
                   props.setModalVisible(!modalVisible);
                 }}
               >
-                {({ handleChange, handleSubmit, values }) => (
+                {({ handleChange, handleSubmit, values, errors }) => (
                   <View style={styles.form}>
                     <TextInput
                       placeholder="City"
@@ -58,6 +59,17 @@ const AddReviewModal = (props) => {
                       value={values.location}
                       returnKeyType="done"
                     />
+                    {errors.location && (
+                      <Text
+                        style={{
+                          paddingBottom: 10,
+                          fontSize: 14,
+                          color: "red",
+                        }}
+                      >
+                        {errors.location}
+                      </Text>
+                    )}
                     <TextInput
                       placeholder="Rating"
                       style={styles.input}
@@ -66,6 +78,17 @@ const AddReviewModal = (props) => {
                       keyboardType="numeric"
                       returnKeyType="done"
                     />
+                    {errors.rating && (
+                      <Text
+                        style={{
+                          paddingBottom: 10,
+                          fontSize: 14,
+                          color: "red",
+                        }}
+                      >
+                        {errors.rating}
+                      </Text>
+                    )}
                     <TextInput
                       multiline
                       placeholder="Description"
@@ -73,6 +96,17 @@ const AddReviewModal = (props) => {
                       onChangeText={handleChange("review")}
                       value={values.review}
                     />
+                    {errors.review && (
+                      <Text
+                        style={{
+                          paddingBottom: 10,
+                          fontSize: 14,
+                          color: "red",
+                        }}
+                      >
+                        {errors.review}
+                      </Text>
+                    )}
                     <View
                       style={{
                         flexDirection: "row",

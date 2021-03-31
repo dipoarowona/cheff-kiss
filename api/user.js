@@ -6,7 +6,7 @@ const login_user = async ({ email, password }) => {
   try {
     await firebase.auth().signInWithEmailAndPassword(email, password);
   } catch (err) {
-    Alert.alert("There is something wrong!!!!", err.message);
+    Alert.alert(err.message);
   }
 };
 
@@ -24,7 +24,7 @@ const create_new_user = async ({ name, email, password }) => {
       totalRating: 0,
     });
   } catch (err) {
-    Alert.alert("There is something wrong(cnu)!!!!", err.message);
+    Alert.alert(err.message);
   }
 };
 

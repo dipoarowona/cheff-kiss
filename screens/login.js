@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Formik } from "formik";
-
+import { loginValidationSchema } from "../Components/formValidation";
 import { login_user } from "../api/user";
 
 const login = ({ setSignedIn }) => {
@@ -21,6 +21,7 @@ const login = ({ setSignedIn }) => {
         }}
       >
         <Formik
+          validationSchema={loginValidationSchema}
           initialValues={{
             email: "",
             password: "",
@@ -32,11 +33,12 @@ const login = ({ setSignedIn }) => {
             }
           }}
         >
-          {({ handleChange, handleSubmit, values }) => (
+          {({ handleChange, handleSubmit, values, errors }) => (
             <View style={styles.form}>
               <View style={{ width: "80%" }}>
-                <Text style={{ color: "#fff", fontSize: 20 }}>Username</Text>
+                <Text style={{ color: "#fff", fontSize: 20 }}>Email</Text>
               </View>
+
               <TextInput
                 placeholder="Email"
                 onChangeText={handleChange("email")}
@@ -44,9 +46,15 @@ const login = ({ setSignedIn }) => {
                 style={styles.input}
                 returnKeyType="done"
               />
+              {errors.email && (
+                <Text style={{ fontSize: 14, color: "white" }}>
+                  {errors.email}
+                </Text>
+              )}
               <View style={{ width: "80%" }}>
                 <Text style={{ color: "#fff", fontSize: 20 }}>Password</Text>
               </View>
+
               <TextInput
                 placeholder="Password"
                 style={styles.input}
@@ -55,6 +63,13 @@ const login = ({ setSignedIn }) => {
                 secureTextEntry
                 returnKeyType="done"
               />
+              {errors.password && (
+                <Text
+                  style={{ paddingBottom: 10, fontSize: 14, color: "white" }}
+                >
+                  {errors.password}
+                </Text>
+              )}
               <View
                 style={{
                   flexDirection: "row",
