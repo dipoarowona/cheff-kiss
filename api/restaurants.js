@@ -26,7 +26,10 @@ const render_restaurants = async (query) => {
       restaurants.push({
         id: doc.id,
         name: doc.data().name,
-        rating: doc.data().overallRate,
+        rating:
+          doc.data().numberofReviews > 0
+            ? doc.data().overallRate / doc.data().numberofReviews
+            : 0,
         image: doc.data().image_location,
       });
     });

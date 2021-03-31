@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,28 +6,50 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import * as firebase from "firebase";
 
 import ReviewCard from "../Components/ReviewCard";
 
 import { logout } from "../api/user";
 import { render_posts } from "../api/posts";
+import { get_account_data } from "../api/user";
 
 const Profile = ({ route, navigation, setSignedIn }) => {
   let currentUser = firebase.auth().currentUser;
   const id = route.params ? route.params.owner_id : currentUser.uid;
   const username = route.params ? route.params.owner : currentUser.displayName;
+
   const [review_data, setReviewData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [avgRating, setAvgRating] = useState(undefined);
+  const [totalReviews, setTotalReviews] = useState(undefined);
+  const [isPress, setIsPress] = useState({
+    reviews: true,
+    media: false,
+  });
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
   const nav = (data) => {
-    navigation.navigate("Review", { data, image, name });
+    navigation.navigate("Review", { data });
   };
   const fetch = async () => {
     setLoading(true);
     const x = await render_posts("owner_id", id);
+    const y = await get_account_data(id);
+    console.log(y.avgRating);
+    setAvgRating(y.avgRating);
+    setTotalReviews(y.numberofReviews);
     setReviewData(x);
     setLoading(false);
   };
@@ -36,82 +58,130 @@ const Profile = ({ route, navigation, setSignedIn }) => {
   }, []);
   return (
     <View style={styles.container}>
-      <View style={styles.settingsGear}>
-        {/* GEAR NOT WORKING SO WE GOTTA FIX THAT */}
-        <TouchableOpacity
-          onPress={() => {
-            logout();
-            setSignedIn(false);
-          }}
-        >
-          <Text>Logout</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.headerRow}>
-        <Image
-          style={styles.profilePic}
-          alt="profile-pic"
-          source={require("../assets/bp.png")}
-        />
-        <View style={{ alignSelf: "center", alignItems: "center" }}>
-          <Text>Reviews</Text>
-          <Text>123</Text>
-        </View>
-        <View style={{ alignSelf: "center", alignItems: "center" }}>
-          <Text>Average Rating</Text>
-          <Text>123</Text>
-        </View>
-        <View style={{ alignSelf: "center", alignItems: "center" }}>
-          <Text>Average Rating</Text>
-          <Text>123</Text>
-        </View>
-      </View>
-      <Text style={styles.username}>{username}</Text>
-      <View style={styles.bioEditView}>
-        <Text>Bio</Text>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {route.params ? (
           <></>
         ) : (
-          <TouchableOpacity style={styles.editAccountBtn}>
-            <Text>Edit Account</Text>
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              right: "5%",
+              top: "1%",
+              zIndex: 10,
+            }}
+            onPress={() => {
+              logout();
+              setSignedIn(false);
+            }}
+          >
+            <FontAwesome name="gear" size={24} color="black" />
           </TouchableOpacity>
         )}
-      </View>
-      <View style={styles.reviewMediaHeader}>
-        <TouchableOpacity>
-          <Text>Reviews</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text>Media</Text>
-        </TouchableOpacity>
-      </View>
-      {loading ? (
-        <View style={{ width: "100%" }}>
-          <Text style={{ fontSize: 50, color: "grey", textAlign: "center" }}>
-            LOADING....
-          </Text>
-        </View>
-      ) : (
-        <>
-          {!review_data ? (
-            <View style={{ width: "100%" }}>
-              <Text
-                style={{ fontSize: 50, color: "grey", textAlign: "center" }}
-              >
-                NO DATA!
-              </Text>
+        <View style={styles.headerRow}>
+          <Image
+            style={styles.profilePic}
+            alt="profile-pic"
+            source={require("../assets/bp.png")}
+          />
+          <View
+            style={{
+              flexDirection: "row",
+              width: "80%",
+
+              justifyContent: "space-around",
+            }}
+          >
+            <View style={{ alignSelf: "center", alignItems: "center" }}>
+              <Text>Reviews</Text>
+              <Text>{totalReviews >= 0 ? totalReviews : ""}</Text>
             </View>
+            <View style={{ alignSelf: "center", alignItems: "center" }}>
+              <Text>Average Rating</Text>
+              <Text>{avgRating >= 0 ? avgRating : ""}</Text>
+            </View>
+          </View>
+        </View>
+        <Text style={styles.username}>{username}</Text>
+        <View style={styles.bioEditView}>
+          <Text>Bio</Text>
+          {route.params ? (
+            <></>
           ) : (
-            <FlatList
-              data={review_data}
-              renderItem={({ item }) => (
-                <ReviewCard nav={nav} data={{ ...item }} />
-              )}
-              keyExtractor={(item) => item.id}
-            />
+            <TouchableOpacity style={styles.editAccountBtn}>
+              <Text>Edit Account</Text>
+            </TouchableOpacity>
           )}
-        </>
-      )}
+        </View>
+        <View style={styles.reviewHeaderView}>
+          <View style={styles.reviewHeaderSubView}>
+            <TouchableOpacity
+              onPress={() => {
+                setIsPress({
+                  reviews: true,
+                  media: false,
+                });
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: isPress.reviews ? "black" : "grey",
+                }}
+              >
+                Reviews
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setIsPress({
+                  reviews: false,
+                  media: true,
+                });
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: isPress.media ? "black" : "grey",
+                }}
+              >
+                Media
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {loading ? (
+          <View style={{ width: "100%" }}>
+            <Text style={{ fontSize: 50, color: "grey", textAlign: "center" }}>
+              LOADING....
+            </Text>
+          </View>
+        ) : (
+          <>
+            {!review_data ? (
+              <View style={{ width: "100%" }}>
+                <Text
+                  style={{ fontSize: 50, color: "grey", textAlign: "center" }}
+                >
+                  NO DATA!
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={review_data}
+                renderItem={({ item }) => (
+                  <ReviewCard nav={nav} data={{ ...item }} />
+                )}
+                keyExtractor={(item) => item.id}
+              />
+            )}
+          </>
+        )}
+      </ScrollView>
       <View style={styles.addReviewView}>
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <FontAwesome
@@ -131,16 +201,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#E2E2E2",
     height: "100%",
   },
-  // settingsGear: {
-  //   position: "absolute",
-  //   right: 10,
-  //   top: 3,
-  // },
   headerRow: {
     flexDirection: "row",
     paddingTop: 15,
-    justifyContent: "space-between",
-    width: "95%",
+    // justifyContent: "space-between",
+    width: "90%",
     alignSelf: "center",
   },
   profilePic: {
@@ -166,12 +231,6 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     backgroundColor: "#fff",
   },
-  reviewMediaHeader: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingTop: 30,
-    borderBottomWidth: 2,
-  },
   addReviewView: {
     position: "absolute",
     bottom: "3%",
@@ -190,6 +249,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5.0,
     elevation: 10,
+  },
+  reviewHeaderView: {
+    width: "100%",
+    backgroundColor: "#E2E2E2",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 30,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 5.0,
+    elevation: 24,
+  },
+  reviewHeaderSubView: {
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignSelf: "center",
+    paddingTop: 30,
+    paddingBottom: 15,
   },
 });
 

@@ -20,6 +20,8 @@ const create_new_user = async ({ name, email, password }) => {
     await db.collection("Users").doc(currentUser.uid).set({
       name,
       email,
+      numberofReviews: 0,
+      totalRating: 0,
     });
   } catch (err) {
     Alert.alert("There is something wrong(cnu)!!!!", err.message);
@@ -35,4 +37,24 @@ const logout = async () => {
   }
 };
 
-module.exports = { create_new_user, login_user, logout };
+//account_data
+const get_account_data = async (id) => {
+  try {
+    const db = firebase.firestore();
+    const data = await db.collection("Users").doc(id).get();
+
+    if (data.empty) {
+      console.log("No matching documents.");
+      return;
+    }
+    return {
+      numberofReviews: data.data().numberofReviews,
+      avgRating:
+        data.data().numberofReviews > 0
+          ? data.data().totalRatings / data.data().numberofReviews
+          : 0,
+    };
+  } catch (err) {}
+};
+
+module.exports = { get_account_data, create_new_user, login_user, logout };

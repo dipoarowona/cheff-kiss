@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  RefreshControl,
 } from "react-native";
 import { Formik } from "formik";
 import RestaurantCard from "../Components/RestaurantCard";
@@ -18,25 +19,35 @@ import { render_restaurants } from "../api/restaurants";
 const Home = ({ navigation }) => {
   const [restaurantData, setRestaurantData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const restaurant_redirect = (data) => {
-    navigation.navigate("Restaurant", { data });
+    navigation.navigate("Restaurant", { data, fetch });
   };
-
   const fetch = async (query) => {
     setLoading(true);
     const data = await render_restaurants(query);
     setRestaurantData(data);
     setLoading(false);
   };
-
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
   useEffect(() => {
     fetch();
   }, []);
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={{ width: "90%", alignSelf: "center" }}>
           <Text style={styles.textHeader}>Restaurants</Text>
         </View>

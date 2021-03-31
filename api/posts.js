@@ -19,6 +19,23 @@ const post = async (info) => {
       restaurant: info.name,
     });
 
+    await db
+      .collection("Users")
+      .doc(firebase.auth().currentUser.uid)
+      .update({
+        numberofReviews: firebase.firestore.FieldValue.increment(1),
+        totalRatings: firebase.firestore.FieldValue.increment(info.rating),
+      });
+
+    console.log();
+    await db
+      .collection("Restaurants")
+      .doc(info.id)
+      .update({
+        numberofReviews: firebase.firestore.FieldValue.increment(1),
+        overallRate: firebase.firestore.FieldValue.increment(info.rating),
+      });
+
     console.log("post made - successful");
   } catch (err) {
     Alert.alert("There is something wrong!!!!", err.message);
@@ -67,6 +84,22 @@ const render_posts = async (query, value, filter) => {
   }
 };
 
-//render posts profiles
+//get restaurant rating
+const restaurant_rating = async (id) => {
+  try {
+    const db = firebase.firestore();
+    const data = await db.collection("Restaurants").doc(id).get();
+    if (data.empty) {
+      console.log("No matching documents.");
+      return;
+    }
+    return data.data().numberofReviews > 0
+      ? data.data().overallRate / data.data().numberofReviews
+      : 0;
+  } catch (err) {}
+};
 
-module.exports = { render_posts, post };
+//delete post
+const delete_post = async (id) => {};
+
+module.exports = { restaurant_rating, render_posts, post };

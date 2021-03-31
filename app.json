@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "cheff-kiss",
+    "name": "Cheff's Kiss",
     "slug": "cheff-kiss",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,12 +20,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "web": {},
+    "description": ""
   }
 }

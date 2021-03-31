@@ -1,23 +1,31 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { AntDesign } from "@expo/vector-icons";
 import Star from "../Components/star";
+import firebase from "firebase";
 
 const ReviewPage = ({ route, navigation }) => {
   const { owner, owner_id, location, date, review, rate } = route.params.data;
 
-  const image = route.params.image;
   const name = route.params.name;
+  console.log(route.params.image);
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
-        <Image style={styles.image} source={{ url: image }} />
-        <Text style={styles.textHeader}>{name}</Text>
-      </View>
+      {route.params.image === undefined ? (
+        <></>
+      ) : (
+        <View style={styles.card}>
+          <Image style={styles.image} source={{ url: route.params.image }} />
+          <Text style={styles.textHeader}>{name}</Text>
+        </View>
+      )}
       <View
         style={{
           width: "87%",
           alignSelf: "center",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
         <TouchableOpacity
@@ -27,6 +35,18 @@ const ReviewPage = ({ route, navigation }) => {
         >
           <Text style={styles.username}>{owner}</Text>
         </TouchableOpacity>
+        {owner_id != firebase.auth().currentUser.uid ? (
+          <></>
+        ) : (
+          <TouchableOpacity onPress={() => {}}>
+            <AntDesign
+              style={styles.username}
+              name="delete"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
+        )}
       </View>
       <View
         style={{

@@ -39,13 +39,14 @@ const AddReviewModal = (props) => {
                 }}
                 onSubmit={({ location, rating, review }) => {
                   post({
+                    id: props.id,
                     name: props.name,
                     location,
                     rating: parseFloat(rating),
                     review,
                   });
-                  props.setModalVisible(!modalVisible);
                   props.fetch();
+                  props.setModalVisible(!modalVisible);
                 }}
               >
                 {({ handleChange, handleSubmit, values }) => (

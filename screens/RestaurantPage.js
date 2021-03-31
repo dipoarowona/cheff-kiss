@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,18 +6,22 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import ReviewCard from "../Components/ReviewCard";
 import Star from "../Components/star";
 import AddReviewModal from "../Components/AddReviewModal";
 import { useEffect } from "react";
-import { render_posts } from "../api/posts";
+import { render_posts, restaurant_rating } from "../api/posts";
 
 const RestaurantPage = ({ route, navigation }) => {
-  const { name, image, rating } = route.params.data;
+  const { id, name, image } = route.params.data;
   const [modalVisible, setModalVisible] = useState(false);
   const [review_data, setReviewData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [rating, setRating] = useState(route.params.data.rating);
   const [loading, setLoading] = useState(false);
 
   var [isPress, setIsPress] = useState({
@@ -29,16 +33,21 @@ const RestaurantPage = ({ route, navigation }) => {
   const nav = (data) => {
     navigation.navigate("Review", { data, image, name });
   };
-  const update_data = (data) => {
-    const y = review_data.concat(data);
-    setReviewData(y);
-  };
   const fetch = async (filter) => {
     setLoading(true);
     const x = await render_posts("restaurant", name, filter);
+    const y = await restaurant_rating(id);
+    setRating(y);
     setReviewData(x);
     setLoading(false);
   };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
   useEffect(() => {
     fetch();
   }, []);
@@ -49,11 +58,16 @@ const RestaurantPage = ({ route, navigation }) => {
         visible={modalVisible}
         setModalVisible={setModalVisible}
         fetch={fetch}
+        id={id}
         name={name}
-        addData={update_data}
       />
+
       <View style={styles.addReviewView}>
-        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+        <TouchableOpacity
+          onPress={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
           <MaterialIcons
             style={styles.addIcon}
             name="rate-review"
@@ -62,106 +76,111 @@ const RestaurantPage = ({ route, navigation }) => {
           />
         </TouchableOpacity>
       </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.card}>
+          <Image style={styles.image} source={{ url: image }} />
+          <Text style={styles.textHeader}>{name}</Text>
+        </View>
+        <View style={styles.ratingView}>
+          <Text style={styles.rating}>{rating}</Text>
+          <View style={styles.starView}>
+            <Star rating={rating} />
+          </View>
+        </View>
 
-      <View style={styles.card}>
-        <Image style={styles.image} source={{ url: image }} />
-        <Text style={styles.textHeader}>{name}</Text>
-      </View>
-      <View style={styles.ratingView}>
-        <Text style={styles.rating}>{rating}</Text>
-        <View style={styles.starView}>
-          <Star rating={rating} />
-        </View>
-      </View>
-
-      <View style={styles.reviewHeaderView}>
-        <View style={styles.reviewHeaderSubView}>
-          <TouchableOpacity
-            onPress={() => {
-              fetch();
-              setIsPress({
-                recommended: true,
-                top: false,
-                critical: false,
-              });
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                color: isPress.recommended ? "black" : "grey",
+        <View style={styles.reviewHeaderView}>
+          <View style={styles.reviewHeaderSubView}>
+            <TouchableOpacity
+              onPress={() => {
+                fetch();
+                setIsPress({
+                  recommended: true,
+                  top: false,
+                  critical: false,
+                });
               }}
             >
-              Recommended
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              fetch("desc");
-              setIsPress({
-                recommended: false,
-                top: true,
-                critical: false,
-              });
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                color: isPress.top ? "black" : "grey",
-              }}
-            >
-              Top Rated
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              fetch("asc");
-              setIsPress({
-                recommended: false,
-                top: false,
-                critical: true,
-              });
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                color: isPress.critical ? "black" : "grey",
-              }}
-            >
-              Most Critical
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {loading ? (
-        <View style={{ width: "100%" }}>
-          <Text style={{ fontSize: 50, color: "grey", textAlign: "center" }}>
-            LOADING....
-          </Text>
-        </View>
-      ) : (
-        <>
-          {!review_data ? (
-            <View style={{ width: "100%" }}>
               <Text
-                style={{ fontSize: 50, color: "grey", textAlign: "center" }}
+                style={{
+                  fontSize: 20,
+                  color: isPress.recommended ? "black" : "grey",
+                }}
               >
-                NO DATA!
+                Recommended
               </Text>
-            </View>
-          ) : (
-            <FlatList
-              data={review_data}
-              renderItem={({ item }) => (
-                <ReviewCard nav={nav} data={{ ...item }} />
-              )}
-              keyExtractor={(item) => item.id}
-            />
-          )}
-        </>
-      )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                fetch("desc");
+                setIsPress({
+                  recommended: false,
+                  top: true,
+                  critical: false,
+                });
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: isPress.top ? "black" : "grey",
+                }}
+              >
+                Top Rated
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                fetch("asc");
+                setIsPress({
+                  recommended: false,
+                  top: false,
+                  critical: true,
+                });
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: isPress.critical ? "black" : "grey",
+                }}
+              >
+                Most Critical
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {loading ? (
+          <View style={{ width: "100%" }}>
+            <Text style={{ fontSize: 50, color: "grey", textAlign: "center" }}>
+              LOADING....
+            </Text>
+          </View>
+        ) : (
+          <>
+            {!review_data ? (
+              <View style={{ width: "100%" }}>
+                <Text
+                  style={{ fontSize: 50, color: "grey", textAlign: "center" }}
+                >
+                  NO DATA!
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={review_data}
+                renderItem={({ item }) => (
+                  <ReviewCard nav={nav} data={{ ...item }} />
+                )}
+                keyExtractor={(item) => item.id}
+              />
+            )}
+          </>
+        )}
+      </ScrollView>
     </View>
   );
 };
