@@ -101,7 +101,7 @@ const Profile = ({ route, navigation, setSignedIn }) => {
             </View>
             <View style={{ alignSelf: "center", alignItems: "center" }}>
               <Text>Average Rating</Text>
-              <Text>{avgRating >= 0 ? avgRating : ""}</Text>
+              <Text>{avgRating >= 0 ? avgRating.toFixed(2) : ""}</Text>
             </View>
           </View>
         </View>

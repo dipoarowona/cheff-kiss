@@ -27,7 +27,6 @@ const post = async (info) => {
         totalRatings: firebase.firestore.FieldValue.increment(info.rating),
       });
 
-    console.log();
     await db
       .collection("Restaurants")
       .doc(info.id)
@@ -70,6 +69,7 @@ const render_posts = async (query, value, filter) => {
         owner_id: doc.data().owner_id,
         owner: doc.data().owner_name,
         review: doc.data().review,
+        restaurant: doc.data().restaurant,
         rate: doc.data().rate,
         date: doc.data().date.toDate().toLocaleString("en-US"),
         location: doc.data().location,
@@ -100,6 +100,28 @@ const restaurant_rating = async (id) => {
 };
 
 //delete post
-const delete_post = async (id) => {};
+const delete_post = async (id, restaurant, rating) => {
+  try {
+    const db = firebase.firestore();
+    await db
+      .collection("Users")
+      .doc(firebase.auth().currentUser.uid)
+      .update({
+        numberofReviews: firebase.firestore.FieldValue.increment(-1),
+        totalRatings: firebase.firestore.FieldValue.increment(-rating),
+      });
+    // await db
+    //   .collection("Restaurants")
+    //   .where("name", "==", restaurant)
+    //   .update({
+    //     numberofReviews: firebase.firestore.FieldValue.increment(-1),
+    //     overallRate: firebase.firestore.FieldValue.increment(-rating),
+    //   });
+    await db.collection("Posts").doc(id).delete();
+    console.log("post deleted - success");
+  } catch (err) {
+    console.log("Could not delete");
+  }
+};
 
-module.exports = { restaurant_rating, render_posts, post };
+module.exports = { delete_post, restaurant_rating, render_posts, post };

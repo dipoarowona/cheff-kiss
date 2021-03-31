@@ -86,7 +86,7 @@ const RestaurantPage = ({ route, navigation }) => {
           <Text style={styles.textHeader}>{name}</Text>
         </View>
         <View style={styles.ratingView}>
-          <Text style={styles.rating}>{rating}</Text>
+          <Text style={styles.rating}>{rating.toFixed(2)}</Text>
           <View style={styles.starView}>
             <Star rating={rating} />
           </View>

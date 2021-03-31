@@ -1,19 +1,29 @@
 import React from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { AntDesign } from "@expo/vector-icons";
 import Star from "../Components/star";
 import firebase from "firebase";
+import { delete_post } from "../api/posts";
 
 const ReviewPage = ({ route, navigation }) => {
-  const { owner, owner_id, location, date, review, rate } = route.params.data;
-
-  const name = route.params.name;
-  console.log(route.params.image);
+  const {
+    id,
+    owner,
+    owner_id,
+    location,
+    restaurant,
+    date,
+    review,
+    rate,
+  } = route.params.data;
+  const name = route.params.name ? route.params.name : restaurant;
   return (
     <View style={styles.container}>
       {route.params.image === undefined ? (
-        <></>
+        <View style={{ ...styles.card, height: 80, backgroundColor: "white" }}>
+          <Text style={{ ...styles.textHeader, color: "#C94545" }}>{name}</Text>
+        </View>
       ) : (
         <View style={styles.card}>
           <Image style={styles.image} source={{ url: route.params.image }} />
@@ -38,7 +48,12 @@ const ReviewPage = ({ route, navigation }) => {
         {owner_id != firebase.auth().currentUser.uid ? (
           <></>
         ) : (
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity
+            onPress={() => {
+              delete_post(id, name, rate);
+              Alert.alert("POST HAS BEEN DELETED");
+            }}
+          >
             <AntDesign
               style={styles.username}
               name="delete"
@@ -60,7 +75,7 @@ const ReviewPage = ({ route, navigation }) => {
         <Text>{date}</Text>
       </View>
       <View style={styles.ratingView}>
-        <Text style={styles.rating}>{rate}</Text>
+        <Text style={styles.rating}>{rate.toFixed(2)}</Text>
         <View style={styles.starView}>
           <Star rating={rate} />
         </View>
