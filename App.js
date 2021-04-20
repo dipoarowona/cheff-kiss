@@ -79,9 +79,17 @@ export default function App() {
       ) : splashloading ? (
         <Stack.Navigator initialRouteName="Splash">
           <Stack.Screen
-            name="Splah"
+            name="Splash"
             component={SplashScreen}
-            options={{ ...LoginOptions }}
+            options={{
+              title: "",
+              headerBackTitleVisible: false,
+              headerStyle: {
+                backgroundColor: "#C94545",
+                height: 50,
+                shadowOffset: { height: 0, width: 0 },
+              },
+            }}
           />
         </Stack.Navigator>
       ) : (

@@ -23,7 +23,6 @@ const AddReviewModal = (props) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
           props.setModalVisible(!modalVisible);
         }}
       >

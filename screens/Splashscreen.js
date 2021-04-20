@@ -1,6 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-
+import { StyleSheet, View } from "react-native";
 const landingscreen = ({ navigation }) => {
   return <View style={styles.container}></View>;
 };

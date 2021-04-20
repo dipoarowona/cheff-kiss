@@ -4,10 +4,11 @@
     "slug": "cheff-kiss",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "",
+    "icon": "./assets/logo.png",
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "#C94545"
+      "backgroundColor": "#fffff",
+      "image": "./assets/logo.png"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -24,6 +25,6 @@
       }
     },
     "web": {},
-    "description": ""
+    "description": "Crowd sourced reviews on your favourite restaurants by locals "
   }
 }

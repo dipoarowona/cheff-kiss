@@ -8,13 +8,14 @@ import {
   FlatList,
   ScrollView,
   RefreshControl,
+  Alert,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import * as firebase from "firebase";
 
 import ReviewCard from "../Components/ReviewCard";
+import SettingsModal from "../Components/settingsModal";
 
-import { logout } from "../api/user";
 import { render_posts } from "../api/posts";
 import { get_account_data } from "../api/user";
 
@@ -23,6 +24,7 @@ const Profile = ({ route, navigation, setSignedIn }) => {
   const id = route.params ? route.params.owner_id : currentUser.uid;
   const username = route.params ? route.params.owner : currentUser.displayName;
 
+  const [modalVisible, setModalVisible] = useState(false);
   const [review_data, setReviewData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -58,6 +60,11 @@ const Profile = ({ route, navigation, setSignedIn }) => {
   }, []);
   return (
     <View style={styles.container}>
+      <SettingsModal
+        visible={modalVisible}
+        setModalVisible={setModalVisible}
+        setSignedIn={setSignedIn}
+      />
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -74,8 +81,7 @@ const Profile = ({ route, navigation, setSignedIn }) => {
               zIndex: 10,
             }}
             onPress={() => {
-              logout();
-              setSignedIn(false);
+              setModalVisible(!modalVisible);
             }}
           >
             <FontAwesome name="gear" size={24} color="black" />
@@ -111,7 +117,14 @@ const Profile = ({ route, navigation, setSignedIn }) => {
           {route.params ? (
             <></>
           ) : (
-            <TouchableOpacity style={styles.editAccountBtn}>
+            <TouchableOpacity
+              style={styles.editAccountBtn}
+              onPress={() =>
+                Alert.alert(
+                  "Account Editing currently disabled, try again later"
+                )
+              }
+            >
               <Text>Edit Account</Text>
             </TouchableOpacity>
           )}

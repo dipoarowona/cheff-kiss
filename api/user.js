@@ -57,4 +57,31 @@ const get_account_data = async (id) => {
   } catch (err) {}
 };
 
-module.exports = { get_account_data, create_new_user, login_user, logout };
+const delete_account = async () => {
+  try {
+    const db = firebase.firestore();
+    const currentUser = firebase.auth().currentUser;
+    const posts = await db
+      .collection("Posts")
+      .where("owner_id", "==", currentUser.uid)
+      .delete();
+    const user = await db.collection("Users").doc(currentUser.uid).delete();
+    await currentUser.delete();
+
+    if (posts.empty && user.empty) {
+      console.log("No matching documents.");
+      return;
+    }
+    console.log("everything was deleted properly");
+  } catch (err) {
+    Alert.alert("error occured: ", err);
+  }
+};
+
+module.exports = {
+  delete_account,
+  get_account_data,
+  create_new_user,
+  login_user,
+  logout,
+};
