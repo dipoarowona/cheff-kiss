@@ -21,7 +21,7 @@ const create_new_user = async ({ name, email, password }) => {
       name,
       email,
       numberofReviews: 0,
-      totalRating: 0,
+      totalRatings: 0,
     });
   } catch (err) {
     Alert.alert(err.message);
@@ -61,20 +61,34 @@ const delete_account = async () => {
   try {
     const db = firebase.firestore();
     const currentUser = firebase.auth().currentUser;
-    const posts = await db
-      .collection("Posts")
+    db.collection("Posts")
       .where("owner_id", "==", currentUser.uid)
-      .delete();
-    const user = await db.collection("Users").doc(currentUser.uid).delete();
-    await currentUser.delete();
+      .get()
+      .then(function (querySnapshot) {
+        var batch = db.batch();
 
-    if (posts.empty && user.empty) {
-      console.log("No matching documents.");
-      return;
-    }
+        querySnapshot.forEach(function (doc) {
+          batch.delete(doc.ref);
+        });
+        return batch.commit();
+      })
+      .then(async function () {
+        console.log("posts - deleted");
+        await db.collection("Users").doc(currentUser.uid).delete();
+        console.log("user db - deleted");
+        await currentUser.delete();
+        console.log("user acc - deleted");
+      });
+    // const user =
+    // await currentUser.delete();
+
+    // if (posts.empty && user.empty) {
+    //   console.log("No matching documents.");
+    //   return;
+    // }
     console.log("everything was deleted properly");
   } catch (err) {
-    Alert.alert("error occured: ", err);
+    console.log("errorrrrr", err);
   }
 };
 
