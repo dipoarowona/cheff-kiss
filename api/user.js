@@ -92,8 +92,41 @@ const delete_account = async () => {
   }
 };
 
+const save_not_token = async (token) => {
+  try {
+    const currentUser = firebase.auth().currentUser;
+    const db = firebase.firestore();
+    await db.collection("Users").doc(currentUser.uid).update({
+      push_token: token,
+    });
+  } catch (err) {
+    Alert.alert(err.message);
+  }
+};
+
+async function send_push_notification(expoPushToken) {
+  const message = {
+    to: expoPushToken,
+    sound: "default",
+    title: "Original Title",
+    body: "And here is the body!",
+    data: { someData: "goes here" },
+  };
+
+  await fetch("https://exp.host/--/api/v2/push/send", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Accept-encoding": "gzip, deflate",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(message),
+  });
+}
+
 module.exports = {
   delete_account,
+  save_not_token,
   get_account_data,
   create_new_user,
   login_user,
